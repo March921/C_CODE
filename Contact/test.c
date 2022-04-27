@@ -1,4 +1,4 @@
-#include "contact.h"
+#include "com.h"
 
 void MenuContact()
 {

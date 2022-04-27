@@ -1,4 +1,4 @@
-﻿#include "contact.h"
+﻿#include "com.h"
 
 //初始化函数
 void InitContact(contact* pc)
