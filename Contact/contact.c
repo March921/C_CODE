@@ -1,20 +1,64 @@
-﻿#include "com.h"
+﻿	
+#include "contact.h"
 
 //初始化函数
 void InitContact(contact* pc)
 {
 	pc->sz = 0;
-	memset(pc->data, 0, sizeof(pc->data));//memset初始化🔺
+	pc->capacity = DEFAULT_SZ;
+	pc->data = calloc(DEFAULT_SZ, sizeof(individual));
+	if (pc->data == NULL)
+	{
+		perror("InitContact");
+		return;
+	}
+
+	//打开文件
+	FILE* pf = fopen("contact.dat", "r");
+	if (pf == NULL)
+	{
+		perror("InitContact");
+		return;
+	}
+	//因为读取多少个元素并不知道，所以每次读取一个
+	individual tmp = { 0 };
+	while (fread(&tmp, sizeof(individual), 1, pf))
+	{
+		ExpandData(pc);
+		pc->data[pc->sz] = tmp;
+		pc->sz++;
+	}
+
+	//关闭文件
+	fclose(pf);
+	pf = NULL;
+}
+
+//扩容函数
+void ExpandData(contact* pc)
+{
+	if (pc->sz == pc->capacity)
+	{
+		individual* ptr = (individual*)realloc(pc->data, (pc->capacity + INC_SZ) * sizeof(individual));
+		if (ptr != NULL)
+		{
+			pc->data = ptr;
+			printf("增容成功!\n");
+			pc->capacity += INC_SZ;
+		}
+		else
+		{
+			printf("增容失败!");
+			perror("AddData");
+			return;
+		}
+	}
 }
 
 //增加信息函数
 void AddData(contact* pc)
 {
-	if (pc->sz == DATA_MAX)
-	{
-		printf("通讯录已满，无法添加！");
-		return;
-	}
+	ExpandData(pc);
 	printf("请输入姓名:>");
 	scanf("%s", pc->data[pc->sz].name);
 	printf("请输入年龄:>");
@@ -182,4 +226,46 @@ void SortData(contact* pc, int InputSort)
 		break;
 	}
 	printf("排序成功！\n");
+}
+
+void SaveData(contact* pc)
+{
+	//打开文件
+	FILE* pf = fopen("contact.dat", "w");
+	if (pf == NULL)
+	{
+		perror("fopen");
+		return;
+	}
+	//int i = 0;
+	//for (i = 0; i < pc->sz; i++)
+	//{
+		fwrite(pc->data, sizeof(individual), pc->sz, pf);
+	//}
+
+	//关闭文件
+	fclose(pf);
+	pf = NULL;
+}
+
+
+void DestroyData(contact* pc)
+{
+	free(pc->data);
+	pc->data = NULL;
+	pc->capacity = 0;
+	pc->sz = 0;
+}
+
+void EmptyData(contact* pc)
+{
+	FILE* pf = fopen("contact.dat", "w");
+	if (pf == NULL)
+	{
+		perror("EmptyData");
+		return;
+	}
+	fclose(pf);
+	pf = NULL;
+	printf("清空文件成功!");
 }

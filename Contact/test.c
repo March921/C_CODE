@@ -1,4 +1,5 @@
-#include "com.h"
+
+#include "contact.h"
 
 void MenuContact()
 {
@@ -6,7 +7,7 @@ void MenuContact()
 	printf("**** 1.Add     2.Dele  3.Modify ****\n");
 	printf("**** 4.Search  5.Sort  6.Print  ****\n");
 	printf("*************  0.Exit  *************\n");
-	printf("************************************\n");
+	printf("*************  7.Empty *************\n");
 }
 
 void MenuSearch()
@@ -23,9 +24,9 @@ void MenuSort()
 	printf("****************************\n");
 }
 
-contact con;
 int main()
 {
+	contact con;
 	int InputContact = 0;
 	int InputSearch = 0;
 	int InputSort = 0;
@@ -64,7 +65,12 @@ int main()
 			PrintData(&con);
 			break;
 		case Exit:
+			SaveData(&con);
+			DestroyData(&con);
 			break;
+		case Empty:
+			EmptyData(&con);
+			return 0;
 		default:
 			printf(" ‰»Î¥ÌŒÛ\n");
 			break;
